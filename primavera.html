@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>¡Feliz Día de la Primavera!</title>
+  <style>
+    html { -webkit-text-size-adjust: 100%; }
+    :root{
+      --text:#0f4c5c;
+      --blue:#0d47a1; --yellow:#ffd600;
+      --center-blue:#08307a; --center-yellow:#f4b400;
+      --scene:#082c7a;
+      --paper1:#ffe7a6; --paper2:#fff3d2;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0}
+    body{
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Color Emoji", sans-serif;
+      min-height:100%;
+      overflow-x:hidden; overflow-y:auto;
+      /* escudo global de fondo */
+      background: var(--scene) url("escudo-boca.png") center / cover no-repeat fixed;
+    }
+
+    /* -------- Pantalla 1 (inicio) -------- */
+    .hero{
+      position:relative; display:grid; place-items:center;
+      min-height:100svh; min-height:100vh; text-align:center; padding:2rem;
+    }
+    /* velo para legibilidad encima del escudo */
+    .hero::before{
+      content:""; position:absolute; inset:0;
+      background:
+        radial-gradient(120% 80% at 50% 12%, rgba(255,255,255,.85), rgba(255,255,255,.42) 55%, rgba(255,255,255,.16) 100%);
+      z-index:0;
+    }
+    .hero > div{ position:relative; z-index:1; }
+
+    h1{
+      margin:0 0 .25rem;
+      font-size:clamp(2.6rem, 6vw, 5rem);
+      line-height:1.05; letter-spacing:.5px; color:var(--text);
+      text-shadow:0 2px 0 rgba(255, 255, 255,.6), 0 10px 30px rgba(0,0,0,.08);
+    }
+    .tag{margin:0 0 1rem; font-size:clamp(1rem,1.4vw + .4rem,1.4rem); color:#0e7490; opacity:.95}
+
+    /* tarjeta transparente: SIN fondo blanco para la PNG */
+    .card{
+      display:inline-block; padding:0; border-radius:22px;
+      box-shadow:0 24px 50px rgba(0,0,0,.22);
+      /* “frosted” muy leve sin color de fondo: respeta transparencia del PNG */
+      backdrop-filter: blur(0.6px);
+      -webkit-backdrop-filter: blur(0.6px);
+    }
+    .card img{
+      display:block; width:min(360px, 78vw); height:auto; border-radius:22px;
+      background: transparent; /* <- importante: nada de fondo */
+    }
+
+    .actions{margin-top:1rem; display:flex; gap:.75rem; justify-content:center; flex-wrap:wrap}
+    .btn{
+      appearance:none; border:0; border-radius:999px; padding:.9rem 1.25rem;
+      font-weight:700; letter-spacing:.3px; cursor:pointer;
+      background:linear-gradient(180deg, var(--yellow), #ffc300); color:#1b1b1b;
+      box-shadow:0 6px 16px rgba(0,0,0,.15), inset 0 -2px 0 rgba(0,0,0,.1);
+      transition:transform .12s ease, box-shadow .12s ease, filter .2s ease;
+    }
+    .btn:hover{transform:translateY(-1px); box-shadow:0 10px 22px rgba(0,0,0,.18), inset 0 -2px 0 rgba(0,0,0,.12)}
+    .btn:active{transform:translateY(0); filter:saturate(1.05)}
+    .btn--blue{background:linear-gradient(180deg, var(--blue), #0a3b86); color:#fff}
+    [hidden]{display:none !important}
+
+    /* -------- Pantalla 2 (ramo) -------- */
+    .scene{
+      position:relative; min-height:100svh; min-height:100vh; width:100%;
+      display:grid; place-items:center; overflow:hidden;
+      background: var(--scene) url("escudo-boca.png") center / contain no-repeat fixed;
+    }
+    /* viñeta fuerte + “degradado” para destacar el ramo */
+    .scene::before{
+      content:""; position:absolute; inset:0;
+      background:
+        radial-gradient(120% 80% at 50% 30%, rgba(255,255,255,.20), rgba(255,255,255,.08) 55%, rgba(0,0,0,.35) 120%),
+        linear-gradient(180deg, rgba(8,44,122,.35), rgba(8,44,122,.15) 40%, rgba(0,0,0,.35));
+      pointer-events:none;
+      z-index:0;
+    }
+    .scene-toolbar{
+      position:absolute; top:1rem; left:0; right:0; display:flex; justify-content:center; gap:.75rem; z-index:4;
+    }
+
+    .bouquet{
+      position:relative; width:min(980px, 94vw); height:min(660px, 72vh);
+      display:block; transform:translateY(18px) scale(.98); opacity:0;
+      transition:opacity .45s ease, transform .45s ease; z-index:1;
+    }
+    .bouquet.is-visible{opacity:1; transform:translateY(0) scale(1);}
+
+    /* halo/sombra suave detrás del ramo */
+    .glow{
+      position:absolute; inset:auto 0 18% 0; margin:auto; width:78%; height:46%;
+      background: radial-gradient(70% 60% at 50% 40%, rgba(255,255,255,.45), rgba(255,255,255,0) 70%),
+                  radial-gradient(80% 70% at 50% 70%, rgba(0,0,0,.38), rgba(0,0,0,0) 70%);
+      filter: blur(18px);
+      z-index:0; pointer-events:none;
+    }
+
+    /* tallos */
+    .stems{position:absolute; bottom:6%; left:50%; width:64%; height:48%; transform:translateX(-50%); z-index:1}
+    .stem{
+      position:absolute; bottom:0; width:9px; height:82%;
+      left:var(--x); transform:rotate(var(--r));
+      background:linear-gradient(180deg, #2e7d32, #1b5e20); border-radius:20px;
+      box-shadow:0 4px 8px rgba(0,0,0,.14);
+    }
+    /* hojas */
+    .leaf{
+      position:absolute; width:110px; height:60px; background:linear-gradient(180deg, #2e7d32, #1b5e20);
+      border-radius:60% 40% 60% 40% / 70% 50% 50% 30%;
+      left:var(--x); bottom:var(--y);
+      transform: rotate(var(--rot));
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.22));
+      z-index:2;
+    }
+
+    /* FLORES “crisantemo”: con repeating-conic-gradient + máscaras (doble capa) */
+    .flower{
+      position:absolute; left:var(--x); top:var(--y);
+      width:var(--s); height:var(--s);
+      transform:translate(-50%,-50%) rotate(var(--rot));
+      transform-origin:50% 80%;
+      filter:drop-shadow(0 14px 22px rgba(0,0,0,.28));
+      z-index:3;
+    }
+    /* capa base (púas amplias) */
+    .flower::before{
+      content:""; position:absolute; inset:0; border-radius:50%;
+      background:
+        radial-gradient(circle at 50% 50%, var(--center) 0 18%, transparent 19%),
+        repeating-conic-gradient(
+          from 0deg,
+          color-mix(in oklab, var(--petal), white 12%) 0 8deg,
+          color-mix(in oklab, var(--petal), black 10%) 8deg 16deg
+        );
+      /* máscara para que el “anillo” de púas florezca hacia afuera */
+      -webkit-mask:
+        radial-gradient(circle at 50% 50%, transparent 0 26%, #000 27% 85%, transparent 86%);
+              mask:
+        radial-gradient(circle at 50% 50%, transparent 0 26%, #000 27% 85%, transparent 86%);
+    }
+    /* capa superior (púas finas + brillo) */
+    .flower::after{
+      content:""; position:absolute; inset:6%; border-radius:50%;
+      background:
+        repeating-conic-gradient(
+          from 12deg,
+          var(--petal) 0 5deg,
+          color-mix(in oklab, var(--petal), black 12%) 5deg 10deg
+        ),
+        radial-gradient(circle at 35% 35%, rgba(255,255,255,.36), transparent 55%);
+      -webkit-mask:
+        radial-gradient(circle at 50% 50%, transparent 0 30%, #000 31% 92%, transparent 93%);
+              mask:
+        radial-gradient(circle at 50% 50%, transparent 0 30%, #000 31% 92%, transparent 93%);
+      mix-blend-mode:multiply;
+    }
+
+    /* animaciones */
+    @keyframes bloom {
+      from{opacity:0; transform:translate(-50%,-50%) scale(.82) rotate(var(--rot))}
+      to  {opacity:1; transform:translate(-50%,-50%) scale(1)   rotate(var(--rot))}
+    }
+    @media (prefers-reduced-motion:no-preference){
+      .flower{ animation: sway 6.2s ease-in-out infinite; }
+      .flower:nth-child(odd){ animation-duration:7.4s }
+      @keyframes sway{
+        0%,100%{ transform:translate(-50%,-50%) rotate(var(--rot)) }
+        50%{ transform:translate(calc(-50% + 2px), calc(-50% - 2px)) rotate(calc(var(--rot) + 3deg)) }
+      }
+    }
+
+    /* papel + moño */
+    .wrap{
+      position:absolute; bottom:2%; left:50%; transform:translateX(-50%);
+      width:48%; height:42%;
+      background:
+        radial-gradient(120% 70% at 50% 120%, rgba(0,0,0,.18), rgba(0,0,0,0) 50%),
+        linear-gradient(135deg, var(--paper1), var(--paper2) 55%, var(--paper1));
+      clip-path: polygon(50% 0%, 95% 40%, 72% 100%, 28% 100%, 5% 40%);
+      box-shadow:0 18px 38px rgba(0,0,0,.28);
+      z-index:2;
+    }
+    .ribbon{
+      position:absolute; bottom:1%; left:50%; transform:translateX(-50%);
+      width:34%; height:7%;
+      background:linear-gradient(180deg, #ff5858, #c91414);
+      border-radius:999px; filter:drop-shadow(0 8px 12px rgba(0,0,0,.28));
+      z-index:3;
+    }
+
+    footer{
+      position:fixed; bottom:calc(.5rem + env(safe-area-inset-bottom));
+      left:0; right:0; text-align:center; font-size:.9rem; color:#e0f2fe; opacity:.85; user-select:none; z-index:10;
+      text-shadow:0 2px 8px rgba(0,0,0,.35);
+    }
+  </style>
+</head>
+<body>
+  <!-- -------- Pantalla Inicio -------- -->
+  <section id="home" class="hero" aria-label="Inicio">
+    <div>
+      <h1>¡Feliz Día de la Primavera!</h1>
+      <p class="tag">¡Vamos Boquita! 💙💛</p>
+
+      <!-- SIN fondo: respeta transparencia del PNG -->
+      <figure class="card">
+        <img src="alcaraz.png" alt="Monito con remera de Boca" loading="lazy" decoding="async">
+      </figure>
+
+      <div class="actions" role="group" aria-label="Acciones">
+        <button id="goBouquet" class="btn" aria-controls="bouquetScreen">Tocar</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- -------- Pantalla Ramo -------- -->
+  <section id="bouquetScreen" class="scene" aria-label="Ramo" hidden>
+    <div class="scene-toolbar">
+      <button id="back" class="btn btn--blue" aria-controls="home">Volver</button>
+      <button id="toggle" class="btn" aria-pressed="true" aria-controls="bouquet">Ocultar ramo</button>
+    </div>
+
+    <div id="bouquet" class="bouquet is-visible" aria-live="polite">
+      <div class="glow" aria-hidden="true"></div>
+
+      <!-- hojas -->
+      <div class="leaf" style="--x:22%; --y:22%; --rot:-18deg"></div>
+      <div class="leaf" style="--x:78%; --y:24%; --rot:200deg"></div>
+      <div class="leaf" style="--x:30%; --y:16%; --rot:-30deg"></div>
+      <div class="leaf" style="--x:70%; --y:18%; --rot:210deg"></div>
+
+      <!-- tallos -->
+      <div class="stems" aria-hidden="true">
+        <div class="stem" style="--x:18%; --r:-10deg"></div>
+        <div class="stem" style="--x:30%; --r:-4deg"></div>
+        <div class="stem" style="--x:42%; --r:2deg"></div>
+        <div class="stem" style="--x:54%; --r:0deg"></div>
+        <div class="stem" style="--x:66%; --r:4deg"></div>
+        <div class="stem" style="--x:78%; --r:10deg"></div>
+      </div>
+
+      <!-- Flores (azules y amarillas) -->
+      <!-- Anillo externo -->
+      <div class="flower" style="--s:170px; --x:22%; --y:36%; --rot:-8deg; --petal:var(--blue);   --center:var(--center-blue)"></div>
+      <div class="flower" style="--s:180px; --x:40%; --y:28%; --rot:3deg;  --petal:var(--yellow); --center:var(--center-yellow)"></div>
+      <div class="flower" style="--s:170px; --x:60%; --y:32%; --rot:-6deg; --petal:var(--blue);   --center:var(--center-blue)"></div>
+      <div class="flower" style="--s:180px; --x:30%; --y:50%; --rot:5deg;  --petal:var(--yellow); --center:var(--center-yellow)"></div>
+      <div class="flower" style="--s:190px; --x:54%; --y:50%; --rot:-2deg; --petal:var(--blue);   --center:var(--center-blue)"></div>
+      <div class="flower" style="--s:175px; --x:74%; --y:48%; --rot:8deg;  --petal:var(--yellow); --center:var(--center-yellow)"></div>
+      <!-- Anillo interno -->
+      <div class="flower" style="--s:155px; --x:36%; --y:38%; --rot:-4deg; --petal:var(--blue);   --center:var(--center-blue)"></div>
+      <div class="flower" style="--s:155px; --x:50%; --y:36%; --rot:6deg;  --petal:var(--yellow); --center:var(--center-yellow)"></div>
+      <div class="flower" style="--s:152px; --x:64%; --y:40%; --rot:-3deg; --petal:var(--blue);   --center:var(--center-blue)"></div>
+      <!-- Centro -->
+      <div class="flower" style="--s:165px; --x:48%; --y:44%; --rot:0deg;  --petal:var(--yellow); --center:var(--center-yellow)"></div>
+
+      <!-- papel + moño -->
+      <div class="wrap" aria-hidden="true"></div>
+      <div class="ribbon" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <footer>Primavera para Anto ♥</footer>
+
+  <script>
+    (function(){
+      const home   = document.getElementById('home');
+      const scene  = document.getElementById('bouquetScreen');
+      const go     = document.getElementById('goBouquet');
+      const back   = document.getElementById('back');
+      const toggle = document.getElementById('toggle');
+      const bouquet= document.getElementById('bouquet');
+
+      function showScene(){
+        home.hidden = true;
+        scene.hidden = false;
+        bouquet.classList.add('is-visible');
+        toggle.textContent = 'Ocultar ramo';
+        toggle.setAttribute('aria-pressed','true');
+        // efecto “bloom” escalonado
+        document.querySelectorAll('#bouquet .flower').forEach((f,i)=>{
+          const current = window.matchMedia('(prefers-reduced-motion:no-preference)').matches ? 'sway 6.2s ease-in-out infinite' : 'none';
+          f.style.animation = `bloom .48s ease both ${i*60}ms, ${current}`;
+        });
+      }
+      function showHome(){
+        scene.hidden = true;
+        home.hidden = false;
+      }
+      function toggleBouquet(){
+        const visible = bouquet.classList.toggle('is-visible');
+        toggle.textContent = visible ? 'Ocultar ramo' : 'Mostrar ramo';
+        toggle.setAttribute('aria-pressed', visible ? 'true' : 'false');
+      }
+
+      go.addEventListener('click', showScene);
+      back.addEventListener('click', showHome);
+      toggle.addEventListener('click', toggleBouquet);
+
+      [go, back, toggle].forEach(btn=>{
+        btn.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault(); btn.click();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
